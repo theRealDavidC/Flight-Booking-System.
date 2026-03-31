@@ -1,6 +1,6 @@
 # Airline Booking System
 
-A terminal-based airline booking system written in COBOL using indexed sequential (ISAM) files as the database — the classic COBOL data store.
+A terminal-based airline booking system written in COBOL using indexed sequential (ISAM) files as the database the classic COBOL data store.
 
 ## Requirements
 
@@ -53,8 +53,8 @@ Data is stored in ISAM indexed files under `data/`:
 | FLIGHTS.dat      | Flight ID      | Flight schedules      |
 | PASSENGERS.dat   | Passenger ID   | Registered passengers |
 | BOOKINGS.dat     | Booking Ref    | Reservations          |
-| PAXSEQ.dat       | —              | Passenger ID counter  |
-| BKGSEQ.dat       | —              | Booking ref counter   |
+| PAXSEQ.dat       | -              | Passenger ID counter  |
+| BKGSEQ.dat       | -              | Booking ref counter   |
 
 Files are created automatically on first run.
 
@@ -80,9 +80,9 @@ Files are created automatically on first run.
 
 ### Booking Classes
 
-- `E` — Economy
-- `B` — Business
-- `F` — First Class
+- `E` - Economy
+- `B` - Business
+- `F` - First Class
 
 ### Status Codes
 
@@ -91,7 +91,7 @@ Files are created automatically on first run.
 
 ## Data Record Layouts
 
-**Flight Record** — 52 bytes
+**Flight Record** - 52 bytes
 ```
 FLT-ID           X(6)    Unique flight identifier
 FLT-NUMBER       X(8)    Airline flight number
@@ -106,7 +106,7 @@ FLT-PRICE        9(7)V99 Ticket price
 FLT-STATUS       X(1)    A=Active C=Cancelled
 ```
 
-**Passenger Record** — 115 bytes
+**Passenger Record** - 115 bytes
 ```
 PAX-ID           X(8)    Auto-generated (PA000001)
 PAX-FIRST-NAME   X(20)   First name
@@ -116,7 +116,7 @@ PAX-EMAIL        X(40)   Email address
 PAX-PHONE        X(15)   Phone number
 ```
 
-**Booking Record** — 45 bytes
+**Booking Record** - 45 bytes
 ```
 BKG-REF          X(8)    Auto-generated (BK000001)
 BKG-FLIGHT-ID    X(6)    Reference to flight
