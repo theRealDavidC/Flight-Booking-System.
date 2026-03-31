@@ -1,0 +1,7 @@
+01 PASSENGER-RECORD.
+   05 PAX-ID            PIC X(8).
+   05 PAX-FIRST-NAME    PIC X(20).
+   05 PAX-LAST-NAME     PIC X(20).
+   05 PAX-PASSPORT      PIC X(12).
+   05 PAX-EMAIL         PIC X(40).
+   05 PAX-PHONE         PIC X(15).

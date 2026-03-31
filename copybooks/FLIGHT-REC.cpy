@@ -1,0 +1,12 @@
+01 FLIGHT-RECORD.
+   05 FLT-ID            PIC X(6).
+   05 FLT-NUMBER        PIC X(8).
+   05 FLT-ORIGIN        PIC X(3).
+   05 FLT-DESTINATION   PIC X(3).
+   05 FLT-DEP-DATE      PIC X(8).
+   05 FLT-DEP-TIME      PIC X(4).
+   05 FLT-ARR-TIME      PIC X(4).
+   05 FLT-TOTAL-SEATS   PIC 9(3).
+   05 FLT-AVAIL-SEATS   PIC 9(3).
+   05 FLT-PRICE         PIC 9(7)V99.
+   05 FLT-STATUS        PIC X(1).

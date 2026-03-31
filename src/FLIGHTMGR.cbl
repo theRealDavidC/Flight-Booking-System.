@@ -1,0 +1,151 @@
+IDENTIFICATION DIVISION.
+PROGRAM-ID. FLIGHTMGR.
+
+ENVIRONMENT DIVISION.
+INPUT-OUTPUT SECTION.
+FILE-CONTROL.
+    SELECT FLIGHT-FILE ASSIGN TO 'data/FLIGHTS.dat'
+        ORGANIZATION IS INDEXED
+        ACCESS MODE IS DYNAMIC
+        RECORD KEY IS FLT-ID
+        ALTERNATE RECORD KEY IS FLT-NUMBER WITH DUPLICATES
+        FILE STATUS IS WS-FS.
+
+DATA DIVISION.
+FILE SECTION.
+FD  FLIGHT-FILE.
+COPY 'FLIGHT-REC.cpy'.
+
+WORKING-STORAGE SECTION.
+01 WS-FS            PIC XX VALUE SPACES.
+01 WS-CHOICE        PIC X  VALUE SPACE.
+01 WS-RUNNING       PIC X  VALUE 'Y'.
+01 WS-EOT           PIC X  VALUE 'N'.
+01 WS-PRICE-IN      PIC X(12) VALUE SPACES.
+01 WS-PRICE-DISP    PIC ZZZ,ZZ9.99.
+01 WS-SEARCH        PIC X(8) VALUE SPACES.
+
+PROCEDURE DIVISION.
+0000-MAIN.
+    OPEN I-O FLIGHT-FILE
+    IF WS-FS = '35'
+        OPEN OUTPUT FLIGHT-FILE
+        CLOSE FLIGHT-FILE
+        OPEN I-O FLIGHT-FILE
+    END-IF
+    PERFORM UNTIL WS-RUNNING = 'N'
+        PERFORM 1000-MENU
+        ACCEPT WS-CHOICE
+        EVALUATE WS-CHOICE
+            WHEN '1' PERFORM 2000-ADD-FLIGHT
+            WHEN '2' PERFORM 3000-LIST-FLIGHTS
+            WHEN '3' PERFORM 4000-SEARCH-FLIGHT
+            WHEN '4' MOVE 'N' TO WS-RUNNING
+            WHEN OTHER
+                DISPLAY '  Invalid option.'
+        END-EVALUATE
+    END-PERFORM
+    CLOSE FLIGHT-FILE
+    MOVE 'Y' TO WS-RUNNING
+    GOBACK.
+
+1000-MENU.
+    DISPLAY ' '
+    DISPLAY '--- FLIGHT MANAGEMENT ---'
+    DISPLAY '  1. Add Flight'
+    DISPLAY '  2. List All Flights'
+    DISPLAY '  3. Search by Number'
+    DISPLAY '  4. Back'
+    DISPLAY 'Select: ' WITH NO ADVANCING.
+
+2000-ADD-FLIGHT.
+    DISPLAY ' '
+    DISPLAY '--- ADD FLIGHT ---'
+    DISPLAY 'Flight ID      (6 chars, e.g. ET101A): '
+        WITH NO ADVANCING
+    ACCEPT FLT-ID
+    DISPLAY 'Flight Number  (8 chars, e.g. ET-0101): '
+        WITH NO ADVANCING
+    ACCEPT FLT-NUMBER
+    DISPLAY 'Origin         (IATA code, 3 chars)  : '
+        WITH NO ADVANCING
+    ACCEPT FLT-ORIGIN
+    DISPLAY 'Destination    (IATA code, 3 chars)  : '
+        WITH NO ADVANCING
+    ACCEPT FLT-DESTINATION
+    DISPLAY 'Departure Date (YYYYMMDD)            : '
+        WITH NO ADVANCING
+    ACCEPT FLT-DEP-DATE
+    DISPLAY 'Departure Time (HHMM)                : '
+        WITH NO ADVANCING
+    ACCEPT FLT-DEP-TIME
+    DISPLAY 'Arrival Time   (HHMM)                : '
+        WITH NO ADVANCING
+    ACCEPT FLT-ARR-TIME
+    DISPLAY 'Total Seats                          : '
+        WITH NO ADVANCING
+    ACCEPT FLT-TOTAL-SEATS
+    MOVE FLT-TOTAL-SEATS TO FLT-AVAIL-SEATS
+    DISPLAY 'Price (e.g. 150.50)                  : '
+        WITH NO ADVANCING
+    ACCEPT WS-PRICE-IN
+    MOVE FUNCTION NUMVAL(WS-PRICE-IN) TO FLT-PRICE
+    MOVE 'A' TO FLT-STATUS
+    WRITE FLIGHT-RECORD
+        INVALID KEY
+            DISPLAY '  ERROR: Flight ID already exists.'
+        NOT INVALID KEY
+            DISPLAY '  Flight added successfully.'
+    END-WRITE.
+
+3000-LIST-FLIGHTS.
+    DISPLAY ' '
+    DISPLAY '--- ALL FLIGHTS ---'
+    DISPLAY 'ID       NUMBER   FROM TO  DATE     DEP  ARR  AVAIL    PRICE'
+    DISPLAY '-------- -------- ---- --- -------- ---- ---- ----- ----------'
+    MOVE LOW-VALUES TO FLT-ID
+    START FLIGHT-FILE KEY >= FLT-ID
+        INVALID KEY
+            DISPLAY '  No flights found.'
+            EXIT PARAGRAPH
+    END-START
+    MOVE 'N' TO WS-EOT
+    PERFORM UNTIL WS-EOT = 'Y'
+        READ FLIGHT-FILE NEXT RECORD
+            AT END MOVE 'Y' TO WS-EOT
+        END-READ
+        IF WS-EOT = 'N'
+            MOVE FLT-PRICE TO WS-PRICE-DISP
+            DISPLAY FLT-ID '  ' FLT-NUMBER
+                ' ' FLT-ORIGIN ' ' FLT-DESTINATION
+                ' ' FLT-DEP-DATE
+                ' ' FLT-DEP-TIME ' ' FLT-ARR-TIME
+                '   ' FLT-AVAIL-SEATS
+                ' ' WS-PRICE-DISP
+        END-IF
+    END-PERFORM.
+
+4000-SEARCH-FLIGHT.
+    DISPLAY ' '
+    DISPLAY 'Flight Number: ' WITH NO ADVANCING
+    ACCEPT WS-SEARCH
+    MOVE WS-SEARCH TO FLT-NUMBER
+    READ FLIGHT-FILE KEY IS FLT-NUMBER
+        INVALID KEY
+            DISPLAY '  Flight not found.'
+        NOT INVALID KEY
+            PERFORM 5000-SHOW-FLIGHT
+    END-READ.
+
+5000-SHOW-FLIGHT.
+    MOVE FLT-PRICE TO WS-PRICE-DISP
+    DISPLAY ' '
+    DISPLAY '  Flight ID  : ' FLT-ID
+    DISPLAY '  Number     : ' FLT-NUMBER
+    DISPLAY '  Route      : ' FLT-ORIGIN ' -> ' FLT-DESTINATION
+    DISPLAY '  Date       : ' FLT-DEP-DATE
+    DISPLAY '  Departure  : ' FLT-DEP-TIME
+    DISPLAY '  Arrival    : ' FLT-ARR-TIME
+    DISPLAY '  Seats Avail: ' FLT-AVAIL-SEATS ' / ' FLT-TOTAL-SEATS
+    DISPLAY '  Price      : ' WS-PRICE-DISP
+    DISPLAY '  Status     : ' FLT-STATUS.
