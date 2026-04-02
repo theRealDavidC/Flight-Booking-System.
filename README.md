@@ -1,6 +1,6 @@
 # Airline Booking System
 
-A terminal-based airline booking system written in COBOL using indexed sequential (ISAM) files as the database the classic COBOL data store.
+A terminal based airline booking system written in COBOL using indexed sequential (ISAM) files as the database the classic COBOL data store.
 
 ## Requirements
 
